@@ -1,0 +1,27 @@
+# Environment variables (IMPORTANT - DO NOT PUSH)
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+.env/
+
+# OS files
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+.git_backup/                        
+# Backup of old nested Git repository
+.git_backup_backend/
+
+# Local database and uploaded runtime data
+frontend/backend/app.db
+frontend/backend/data/uploads/

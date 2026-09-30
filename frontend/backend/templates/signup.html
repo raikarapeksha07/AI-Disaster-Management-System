@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <style>
+        :root { --bg-top:#081521; --bg-bottom:#22597b; --panel:rgba(9,19,31,.8); --soft:rgba(255,255,255,.08); --border:rgba(255,255,255,.12); --text:#f4fbff; --muted:#b4cedc; --accent:#7ae3ff; --accent-strong:#49a7ff; --success:#caf7db; }
+        * { box-sizing:border-box; }
+        body {
+            margin:0;
+            min-height:100vh;
+            padding:24px;
+            overflow-x:hidden;
+            overflow-y:auto;
+            font-family:"Segoe UI",sans-serif;
+            color:var(--text);
+            background:
+                radial-gradient(circle at 12% 22%, rgba(122,227,255,.16), transparent 24%),
+                radial-gradient(circle at 82% 14%, rgba(255,255,255,.09), transparent 18%),
+                linear-gradient(180deg,var(--bg-top),var(--bg-bottom));
+        }
+        body::before,
+        body::after {
+            content:"";
+            position:fixed;
+            left:-18%;
+            width:360px;
+            height:90px;
+            border-radius:999px;
+            background:linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent);
+            filter:blur(10px);
+            pointer-events:none;
+            animation:drift 18s linear infinite;
+        }
+        body::before { top:18%; }
+        body::after { top:70%; animation-duration:24s; animation-direction:reverse; }
+        .page {
+            width:min(1180px, 100%);
+            margin:0 auto;
+            display:grid;
+            grid-template-columns:.9fr 1.1fr;
+            border-radius:30px;
+            overflow:hidden;
+            border:1px solid var(--border);
+            background:rgba(5,14,23,.45);
+            backdrop-filter:blur(18px);
+            box-shadow:0 28px 60px rgba(0,0,0,.28);
+        }
+        .welcome {
+            position:relative;
+            padding:42px;
+            background:
+                radial-gradient(circle at 18% 24%, rgba(122,227,255,.18), transparent 28%),
+                linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+        }
+        .eyebrow { margin:0 0 16px; color:var(--accent); text-transform:uppercase; letter-spacing:.22em; font-size:12px; }
+        .welcome h1 { margin:0; font-size:clamp(38px, 6vw, 70px); line-height:.95; max-width:8ch; }
+        .welcome p { color:var(--muted); line-height:1.7; max-width:34ch; }
+        .steps {
+            display:grid;
+            gap:14px;
+            margin-top:28px;
+        }
+        .step {
+            padding:16px 18px;
+            border-radius:20px;
+            background:var(--soft);
+            border:1px solid rgba(255,255,255,.08);
+        }
+        .step strong { display:block; margin-bottom:6px; }
+        .mascot-scene {
+            position:relative;
+            width:min(280px, 100%);
+            margin-top:26px;
+            padding:18px;
+            border-radius:28px;
+            background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+            border:1px solid rgba(255,255,255,.08);
+            backdrop-filter:blur(10px);
+            overflow:hidden;
+            margin-left:auto;
+            margin-right:auto;
+        }
+        .mascot-scene .caption {
+            margin-top:10px;
+            color:var(--muted);
+            font-size:13px;
+        }
+        .weather-mascot {
+            display:block;
+            width:100%;
+            height:auto;
+        }
+        .weather-mascot .presenter {
+            animation:floaty 5s ease-in-out infinite;
+            transform-origin:center;
+        }
+        .weather-mascot .blink {
+            animation:blink 4.8s infinite;
+            transform-origin:center;
+        }
+        .weather-mascot .point-arm {
+            animation:point 3s ease-in-out infinite;
+            transform-origin:142px 182px;
+        }
+        .weather-mascot .pin-bob {
+            animation:pin-bob 2.6s ease-in-out infinite;
+        }
+        .weather-mascot .ring {
+            animation:ring 2.2s ease-out infinite;
+            transform-origin:center;
+        }
+        .weather-mascot .phone-glow { animation:ring 3.5s ease-in-out infinite; transform-origin:center; }
+        .weather-mascot .rain-drop { animation:rain-drop 1.6s linear infinite; }
+        .weather-mascot .rain-drop.delay-1 { animation-delay:.4s; }
+        .weather-mascot .rain-drop.delay-2 { animation-delay:.8s; }
+        .weather-mascot .breeze-swoosh { animation:breeze-swoosh 2.8s ease-in-out infinite; }
+        .weather-mascot .umbrella-sway { animation:umbrella-sway 3.4s ease-in-out infinite; transform-origin:104px 102px; }
+        .weather-mascot .bag-swing { animation:bag-swing 3.2s ease-in-out infinite; transform-origin:126px 214px; }
+        .wind-lines {
+            position:absolute;
+            left:0;
+            right:0;
+            bottom:36px;
+            height:90px;
+            pointer-events:none;
+        }
+        .wind-lines span {
+            position:absolute;
+            left:-25%;
+            height:2px;
+            border-radius:999px;
+            background:linear-gradient(90deg, transparent, rgba(255,255,255,.72), transparent);
+            animation:breeze 11s linear infinite;
+        }
+        .wind-lines span:nth-child(1) { top:8px; width:160px; }
+        .wind-lines span:nth-child(2) { top:34px; width:220px; animation-delay:2.5s; }
+        .wind-lines span:nth-child(3) { top:62px; width:130px; animation-delay:5.2s; }
+        .card {
+            padding:42px;
+            background:var(--panel);
+        }
+        .card h2 { margin:0 0 8px; font-size:32px; }
+        .card > p { margin:0 0 14px; color:var(--muted); }
+        .grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+        .field { display:block; }
+        .field-hint { display:block; margin-top:14px; font-size:13px; color:var(--muted); }
+        input, select, button { width:100%; padding:14px 16px; border:0; border-radius:16px; font-size:15px; margin-top:10px; }
+        input, select { background:rgba(255,255,255,.1); color:var(--text); border:1px solid rgba(255,255,255,.06); }
+        button { cursor:pointer; font-weight:700; min-height:48px; transition:transform .2s ease, box-shadow .2s ease; }
+        .primary { background:linear-gradient(135deg,var(--accent),var(--accent-strong)); color:#04111f; box-shadow:0 16px 30px rgba(73,167,255,.26); }
+        .secondary { background:rgba(255,255,255,.12); color:var(--text); }
+        button:hover { transform:translateY(-1px); }
+        .actions { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
+        .message { min-height:24px; margin-top:14px; color:#ffd2cc; line-height:1.5; overflow-wrap:anywhere; }
+        .field-error { min-height:18px; margin-top:6px; color:#ffd2cc; font-size:12px; }
+        a { color:var(--accent); }
+        .foot-note {
+            margin-top:18px;
+            padding:14px 16px;
+            border-radius:18px;
+            background:rgba(255,255,255,.05);
+            color:var(--muted);
+            font-size:14px;
+            line-height:1.5;
+        }
+        @keyframes drift {
+            from { transform:translateX(0); }
+            to { transform:translateX(150vw); }
+        }
+        @keyframes breeze {
+            0% { transform:translateX(0) scaleX(.9); opacity:0; }
+            10% { opacity:.85; }
+            70% { opacity:.5; }
+            100% { transform:translateX(150vw) scaleX(1.08); opacity:0; }
+        }
+        @keyframes floaty {
+            0%, 100% { transform:translateY(0); }
+            50% { transform:translateY(-7px); }
+        }
+        @keyframes blink {
+            0%, 44%, 48%, 100% { opacity:1; }
+            46% { opacity:.15; }
+        }
+        @keyframes point {
+            0%, 100% { transform:rotate(0deg); }
+            30% { transform:rotate(-6deg); }
+            60% { transform:rotate(10deg); }
+        }
+        @keyframes pin-bob {
+            0%, 100% { transform:translateY(0); }
+            50% { transform:translateY(-5px); }
+        }
+        @keyframes ring {
+            0% { opacity:.65; transform:scale(.65); }
+            100% { opacity:0; transform:scale(1.4); }
+        }
+        @keyframes rain-drop {
+            0% { transform:translateY(0); opacity:0; }
+            20% { opacity:.9; }
+            100% { transform:translateY(18px); opacity:0; }
+        }
+        @keyframes breeze-swoosh {
+            0%, 100% { transform:translateX(0); opacity:.4; }
+            50% { transform:translateX(10px); opacity:.95; }
+        }
+        @keyframes umbrella-sway {
+            0%, 100% { transform:rotate(0deg); }
+            50% { transform:rotate(-3deg); }
+        }
+        @keyframes bag-swing {
+            0%, 100% { transform:rotate(2deg); }
+            50% { transform:rotate(-5deg); }
+        }
+        @media (max-width:980px) {
+            .page { grid-template-columns:1fr; }
+            .welcome, .card { padding:28px; }
+            .welcome h1 { max-width:unset; }
+            .wind-lines { display:none; }
+        }
+        @media (max-width:640px) {
+            body { padding:14px; }
+            .page { border-radius:24px; }
+            .welcome, .card { padding:22px; }
+            .grid, .actions { grid-template-columns:1fr; }
+            input, select, button { font-size:16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <section class="welcome">
+            <p class="eyebrow">Weather Ready Onboarding</p>
+            <h1>Join the forecast before it turns.</h1>
+            <p>Create your account, attach your location, and let the system watch changing conditions with you.</p>
+            <div class="steps">
+                <div class="step"><strong>1. Set your profile</strong><span>Add your basic details so alerts stay linked to the right person.</span></div>
+                <div class="step"><strong>2. Capture location</strong><span>Use live coordinates or enter them manually for region-specific monitoring.</span></div>
+                <div class="step"><strong>3. Verify and enter</strong><span>Confirm your email, then step into the live dashboard.</span></div>
+            </div>
+            <div class="mascot-scene" aria-hidden="true">
+                <svg class="weather-mascot" viewBox="0 0 260 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g class="phone-glow">
+                        <rect x="58" y="18" width="146" height="244" rx="24" fill="url(#phoneBgSignup)" stroke="#141820" stroke-width="4"/>
+                    </g>
+                    <text x="78" y="54" fill="white" font-size="19" font-family="Segoe UI, sans-serif">Weather</text>
+                    <text x="78" y="79" fill="white" font-size="19" font-family="Segoe UI, sans-serif">Forecast</text>
+                    <g transform="translate(162 48)">
+                        <path d="M10 0C16 -8 29 -8 35 0C42 -4 51 1 51 10C51 18 44 24 35 24H12C3 24 -4 18 -4 10C-4 3 1 -2 10 0Z" fill="#e8f5fb"/>
+                        <path class="rain-drop" d="M10 28L6 38" stroke="#d4eef8" stroke-width="3" stroke-linecap="round"/>
+                        <path class="rain-drop delay-1" d="M24 28L20 38" stroke="#d4eef8" stroke-width="3" stroke-linecap="round"/>
+                        <path class="rain-drop delay-2" d="M38 28L34 38" stroke="#d4eef8" stroke-width="3" stroke-linecap="round"/>
+                    </g>
+                    <text x="162" y="96" fill="white" font-size="17" font-family="Segoe UI, sans-serif">+ 5c</text>
+                    <rect x="132" y="124" width="58" height="20" rx="10" fill="#f74d7d"/>
+                    <text x="161" y="138" text-anchor="middle" fill="white" font-size="11" font-family="Segoe UI, sans-serif">Week >></text>
+                    <g transform="translate(150 190)">
+                        <path d="M10 0C16 -8 29 -8 35 0C42 -4 51 1 51 10C51 18 44 24 35 24H12C3 24 -4 18 -4 10C-4 3 1 -2 10 0Z" fill="#8fe4ff"/>
+                        <path class="rain-drop" d="M10 28L6 38" stroke="#bff4ff" stroke-width="3" stroke-linecap="round"/>
+                        <path class="rain-drop delay-1" d="M24 28L20 38" stroke="#bff4ff" stroke-width="3" stroke-linecap="round"/>
+                    </g>
+                    <text x="186" y="212" fill="#8fe4ff" font-size="15" font-family="Segoe UI, sans-serif">+ 8c</text>
+                    <g transform="translate(150 226)">
+                        <path d="M10 0C16 -8 29 -8 35 0C42 -4 51 1 51 10C51 18 44 24 35 24H12C3 24 -4 18 -4 10C-4 3 1 -2 10 0Z" fill="#8fe4ff"/>
+                        <path class="breeze-swoosh" d="M8 30C18 24 29 24 39 30" stroke="#bff4ff" stroke-width="3" stroke-linecap="round"/>
+                    </g>
+                    <text x="186" y="248" fill="#8fe4ff" font-size="15" font-family="Segoe UI, sans-serif">+ 7c</text>
+                    <g class="presenter" transform="translate(22 86)">
+                        <g class="umbrella-sway">
+                            <path d="M22 36C44 2 102 -8 144 26C128 22 118 27 104 43C92 29 77 25 59 39C51 28 40 25 22 36Z" fill="#ff4f87"/>
+                            <path d="M82 12C108 28 128 54 134 92C122 72 111 63 97 69C92 55 87 45 81 34C72 45 63 58 56 78C48 64 39 57 23 58C37 40 55 24 82 12Z" fill="#ff7ca9"/>
+                            <path d="M82 12L61 126" stroke="#74431d" stroke-width="3"/>
+                        </g>
+                        <circle cx="54" cy="74" r="13" fill="#f0bb9d"/>
+                        <path d="M42 71C42 59 51 52 60 52C70 52 78 59 78 71C78 63 74 58 68 57C62 56 55 57 49 63L42 71Z" fill="#11141c"/>
+                        <path d="M42 84L34 98" stroke="#f0bb9d" stroke-width="8" stroke-linecap="round"/>
+                        <path class="point-arm" d="M74 88L92 106" stroke="#f0bb9d" stroke-width="8" stroke-linecap="round"/>
+                        <path d="M38 94C38 80 48 74 59 74C72 74 82 83 82 98V180H38V94Z" fill="#f7a62c"/>
+                        <rect x="47" y="112" width="18" height="26" rx="4" fill="#c8781f"/>
+                        <path d="M52 180L50 220" stroke="#1f2129" stroke-width="10" stroke-linecap="round"/>
+                        <path d="M70 180L74 218" stroke="#1f2129" stroke-width="10" stroke-linecap="round"/>
+                        <path d="M43 221C50 211 60 211 65 221" stroke="#0a0d14" stroke-width="10" stroke-linecap="round"/>
+                        <path d="M68 220C75 210 85 210 90 220" stroke="#0a0d14" stroke-width="10" stroke-linecap="round"/>
+                        <g class="bag-swing">
+                            <path d="M86 110L116 122L112 180L80 172Z" fill="#e0b6bd"/>
+                            <path d="M88 116C92 103 103 100 111 110" stroke="#d49ba6" stroke-width="3" fill="none"/>
+                        </g>
+                    </g>
+                    <defs>
+                        <linearGradient id="phoneBgSignup" x1="131" y1="18" x2="131" y2="262" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#6fb4c7"/>
+                            <stop offset="1" stop-color="#eef7fb"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <div class="caption">Our forecast helper is matching your profile to the right location zone.</div>
+            </div>
+            <div class="wind-lines" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </section>
+        <section class="card">
+            <h2>Create Account</h2>
+            <p>Sign up, capture your location, verify your email, then access the dashboard.</p>
+            <div class="grid">
+                <div class="field">
+                    <span class="field-hint">Full name</span>
+                    <input id="name" type="text" placeholder="Your name">
+                    <div class="field-error" id="nameError"></div>
+                </div>
+                <div class="field">
+                    <span class="field-hint">Email</span>
+                    <input id="email" type="email" placeholder="you@example.com">
+                    <div class="field-error" id="emailError"></div>
+                </div>
+                <div class="field">
+                    <span class="field-hint">Phone</span>
+                    <input id="phone" type="text" placeholder="+9198xxxxxxx">
+                    <div class="field-error" id="phoneError"></div>
+                </div>
+                <div class="field">
+                    <span class="field-hint">Password</span>
+                    <input id="password" type="password" placeholder="Minimum 8 characters">
+                    <div class="field-error" id="passwordError"></div>
+                </div>
+                <div class="field">
+                    <span class="field-hint">Latitude</span>
+                    <input id="lat" type="text" placeholder="Eg. 9.9312">
+                    <div class="field-error" id="latError"></div>
+                </div>
+                <div class="field">
+                    <span class="field-hint">Longitude</span>
+                    <input id="lon" type="text" placeholder="Eg. 76.2673">
+                    <div class="field-error" id="lonError"></div>
+                </div>
+            </div>
+            <div class="field">
+                <span class="field-hint">Monitored state</span>
+                <select id="state">
+                    <option value="{{ default_state }}">{{ default_state|title }}</option>
+                    <option value="kerala">Kerala</option>
+                    <option value="maharashtra">Maharashtra</option>
+                    <option value="himachal pradesh">Himachal Pradesh</option>
+                    <option value="uttarakhand">Uttarakhand</option>
+                    <option value="assam">Assam</option>
+                    <option value="gujarat">Gujarat</option>
+                    <option value="tamil nadu">Tamil Nadu</option>
+                    <option value="karnataka">Karnataka</option>
+                    <option value="west bengal">West Bengal</option>
+                    <option value="rajasthan">Rajasthan</option>
+                    <option value="punjab">Punjab</option>
+                    <option value="bihar">Bihar</option>
+                    <option value="odisha">Odisha</option>
+                    <option value="madhya pradesh">Madhya Pradesh</option>
+                    <option value="delhi">Delhi</option>
+                </select>
+                <div class="field-error" id="stateError"></div>
+            </div>
+            <div class="actions">
+                <button id="locationButton" class="secondary" type="button">Use My Location</button>
+                <button id="signupButton" class="primary" type="button">Create My Account</button>
+            </div>
+            <div class="message" id="message"></div>
+            <div class="foot-note">Tip: location-aware signup makes the first dashboard load much more useful because risk checks can start from your saved coordinates.</div>
+            <p>Already verified? <a href="/login">Log in</a></p>
+        </section>
+    </div>
+    <script>
+        const messageEl = document.getElementById("message");
+        const fieldIds = ["name", "email", "phone", "password", "lat", "lon", "state"];
+
+        function clearFieldErrors() {
+            fieldIds.forEach(field => {
+                const errorEl = document.getElementById(`${field}Error`);
+                if (errorEl) {
+                    errorEl.innerText = "";
+                }
+            });
+        }
+
+        function showFieldError(field, message) {
+            const errorEl = document.getElementById(`${field}Error`);
+            if (errorEl) {
+                errorEl.innerText = message;
+            } else {
+                messageEl.style.color = "#ffd2cc";
+                messageEl.innerText = message;
+            }
+        }
+
+        function mapBackendError(message) {
+            const normalized = (message || "").toLowerCase();
+            const field = fieldIds.find(item => normalized.startsWith(`${item} `) || normalized === `${item} is required`);
+            if (field) {
+                showFieldError(field, message);
+                return true;
+            }
+            return false;
+        }
+
+        document.getElementById("locationButton").addEventListener("click", () => {
+            if (!navigator.geolocation) {
+                messageEl.innerText = "Geolocation is not supported by this browser.";
+                return;
+            }
+            messageEl.innerText = "Fetching your location...";
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    document.getElementById("lat").value = position.coords.latitude.toFixed(6);
+                    document.getElementById("lon").value = position.coords.longitude.toFixed(6);
+                    messageEl.style.color = "#caf7db";
+                    messageEl.innerText = "Location captured successfully.";
+                },
+                () => {
+                    messageEl.style.color = "#ffd2cc";
+                    messageEl.innerText = "Location permission denied.";
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+            );
+        });
+        document.getElementById("signupButton").addEventListener("click", async () => {
+            clearFieldErrors();
+            messageEl.style.color = "#ffd2cc";
+            messageEl.innerText = "";
+            const res = await fetch("/signup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: document.getElementById("name").value.trim(),
+                    email: document.getElementById("email").value.trim(),
+                    phone: document.getElementById("phone").value.trim(),
+                    password: document.getElementById("password").value,
+                    lat: document.getElementById("lat").value.trim(),
+                    lon: document.getElementById("lon").value.trim(),
+                    state: document.getElementById("state").value
+                })
+            });
+            const text = await res.text();
+            try {
+                const data = JSON.parse(text);
+                if (!res.ok || data.success === false) {
+                    throw new Error(data.error || "Signup failed.");
+                }
+                messageEl.style.color = "#caf7db";
+                messageEl.innerText = data.message || "Signup successful.";
+                if (data.redirect_url) {
+                    window.location.href = data.redirect_url;
+                }
+            } catch (error) {
+                messageEl.style.color = "#ffd2cc";
+                if (!mapBackendError(error.message)) {
+                    messageEl.innerText = error.message || "Signup failed.";
+                }
+            }
+        });
+    </script>
+</body>
+</html>

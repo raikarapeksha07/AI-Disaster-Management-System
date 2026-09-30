@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% set page_title = "Customer Care" %}
+{% block title %}Customer Care{% endblock %}
+{% block content %}
+<section class="page-grid">
+    <div class="page-panel">
+        <p class="eyebrow">Customer Care</p>
+        <h2>Support And Assistance</h2>
+        <p class="page-copy">For platform help, recovery issues, account questions, or dashboard support, use the contact options below.</p>
+        <div class="info-list">
+            <div class="info-item"><strong>Support Email</strong><a href="mailto:{{ support.email }}">{{ support.email }}</a></div>
+            <div class="info-item"><strong>Customer Care</strong><a href="tel:{{ support.customer_care }}">{{ support.customer_care }}</a></div>
+            <div class="info-item"><strong>Emergency Helpline</strong><a href="tel:{{ support.helpline }}">{{ support.helpline }}</a></div>
+            <div class="info-item"><strong>Response Hours</strong>{{ support.hours }}</div>
+        </div>
+    </div>
+    <div class="page-panel">
+        <p class="eyebrow">Need Help</p>
+        <h2>Common Reasons To Contact Us</h2>
+        <div class="info-list">
+            <div class="info-item"><strong>Login or password issues</strong>Use support if you cannot access the platform or need account recovery help.</div>
+            <div class="info-item"><strong>Alert delivery questions</strong>Reach out if SMS notifications are delayed, missing, or not updating as expected.</div>
+            <div class="info-item"><strong>Dashboard support</strong>Get help understanding risk, location, or alert acknowledgement behavior.</div>
+        </div>
+    </div>
+</section>
+{% endblock %}

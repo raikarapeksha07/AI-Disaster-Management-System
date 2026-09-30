@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% set page_title = "Emergency Contacts" %}
+{% block title %}Emergency Contacts{% endblock %}
+{% block content %}
+<section class="page-grid">
+    <div class="page-panel">
+        <p class="eyebrow">Emergency Contacts</p>
+        <h2>Important Numbers</h2>
+        <p class="page-copy">Use these contacts when you need immediate emergency help. Call the correct service first based on the situation.</p>
+        <div class="info-list">
+            {% for item in emergency_contacts %}
+            <div class="info-item">
+                <strong>{{ item.label }}</strong>
+                <a href="tel:{{ item.number }}">{{ item.number }}</a><br>
+                {{ item.description }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="page-panel">
+        <p class="eyebrow">Safety Note</p>
+        <h2>Before You Call</h2>
+        <div class="info-list">
+            <div class="info-item"><strong>Share your location clearly</strong>Give landmarks, district, or live coordinates if available.</div>
+            <div class="info-item"><strong>Describe the risk briefly</strong>Say whether it is flood, fire, injury, road blockage, or another urgent event.</div>
+            <div class="info-item"><strong>Keep your phone reachable</strong>Emergency teams may call back for clarification.</div>
+        </div>
+    </div>
+</section>
+{% endblock %}

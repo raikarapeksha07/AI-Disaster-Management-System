@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        :root {
+            --bg-top:#081521;
+            --bg-bottom:#1f5578;
+            --panel:rgba(8, 18, 31, 0.78);
+            --panel-soft:rgba(255,255,255,0.08);
+            --border:rgba(255,255,255,0.14);
+            --text:#f4fbff;
+            --muted:#b3cfde;
+            --accent:#7ae3ff;
+            --accent-strong:#56b8ff;
+            --shadow:0 28px 60px rgba(0,0,0,0.28);
+        }
+        * { box-sizing:border-box; }
+        body {
+            margin:0;
+            min-height:100vh;
+            display:grid;
+            justify-items:center;
+            align-items:start;
+            padding:24px;
+            overflow-x:hidden;
+            overflow-y:auto;
+            font-family:"Segoe UI",sans-serif;
+            color:var(--text);
+            background:
+                radial-gradient(circle at 15% 20%, rgba(122,227,255,.18), transparent 25%),
+                radial-gradient(circle at 85% 18%, rgba(255,255,255,.12), transparent 18%),
+                linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+        }
+        body::before,
+        body::after {
+            content:"";
+            position:fixed;
+            pointer-events:none;
+            filter:blur(10px);
+            opacity:.7;
+        }
+        body::before {
+            top:12%;
+            left:-18%;
+            width:320px;
+            height:90px;
+            border-radius:999px;
+            background:linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+            animation:drift 16s linear infinite;
+        }
+        body::after {
+            top:58%;
+            left:-25%;
+            width:420px;
+            height:100px;
+            border-radius:999px;
+            background:linear-gradient(90deg, transparent, rgba(122,227,255,.12), transparent);
+            animation:drift 20s linear infinite reverse;
+        }
+        .auth-shell {
+            position:relative;
+            width:min(1080px, 100%);
+            margin:auto 0;
+            display:grid;
+            grid-template-columns:1.05fr .95fr;
+            border:1px solid var(--border);
+            border-radius:30px;
+            overflow:hidden;
+            background:rgba(7, 16, 27, 0.44);
+            box-shadow:var(--shadow);
+            backdrop-filter:blur(18px);
+        }
+        .hero {
+            position:relative;
+            padding:42px;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(122,227,255,.18), transparent 32%),
+                linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+        }
+        .hero::before {
+            content:"";
+            position:absolute;
+            inset:auto 10% 10% auto;
+            width:220px;
+            height:220px;
+            border-radius:50%;
+            background:radial-gradient(circle, rgba(122,227,255,.18), transparent 70%);
+        }
+        .eyebrow {
+            margin:0 0 16px;
+            text-transform:uppercase;
+            letter-spacing:.2em;
+            font-size:12px;
+            color:var(--accent);
+        }
+        .hero h1 {
+            margin:0;
+            font-size:clamp(38px, 6vw, 72px);
+            line-height:.95;
+            max-width:8ch;
+        }
+        .hero p {
+            margin:18px 0 0;
+            max-width:36ch;
+            color:var(--muted);
+            line-height:1.6;
+        }
+        .weather-strip {
+            display:grid;
+            grid-template-columns:repeat(3, minmax(0, 1fr));
+            gap:14px;
+            margin-top:30px;
+        }
+        .weather-chip {
+            padding:16px;
+            border-radius:20px;
+            background:var(--panel-soft);
+            border:1px solid rgba(255,255,255,.08);
+        }
+        .weather-chip strong {
+            display:block;
+            font-size:28px;
+            margin-bottom:6px;
+        }
+        .mascot-scene {
+            position:relative;
+            width:min(280px, 100%);
+            margin-top:26px;
+            padding:18px;
+            border-radius:28px;
+            background:
+                radial-gradient(circle at 22% 18%, rgba(255,210,98,.22), transparent 26%),
+                linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+            border:1px solid rgba(255,255,255,.08);
+            backdrop-filter:blur(10px);
+            overflow:hidden;
+            margin-left:auto;
+            margin-right:auto;
+        }
+        .mascot-scene::before {
+            content:"";
+            position:absolute;
+            inset:auto -24px -30px auto;
+            width:160px;
+            height:160px;
+            border-radius:50%;
+            background:radial-gradient(circle, rgba(122,227,255,.18), transparent 72%);
+            pointer-events:none;
+        }
+        .mascot-status {
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            margin-top:12px;
+            padding:10px 12px;
+            border-radius:999px;
+            background:rgba(255,255,255,.08);
+            color:var(--muted);
+            font-size:13px;
+        }
+        .status-dot {
+            width:10px;
+            height:10px;
+            border-radius:50%;
+            background:#7ae3ff;
+            box-shadow:0 0 0 rgba(122,227,255,.45);
+            animation:pulse 1.8s ease-in-out infinite;
+        }
+        .weather-mascot {
+            display:block;
+            width:100%;
+            height:auto;
+        }
+        .card {
+            padding:42px;
+            background:var(--panel);
+        }
+        .card h2 { margin:0 0 8px; font-size:32px; }
+        .card > p { margin:0 0 10px; color:var(--muted); line-height:1.6; }
+        .message {
+            min-height:22px;
+            margin:16px 0 8px;
+            color:#ffd0d0;
+        }
+        .field-label {
+            display:block;
+            margin-top:14px;
+            font-size:13px;
+            color:var(--muted);
+        }
+        input, button {
+            width:100%;
+            padding:14px 16px;
+            border-radius:16px;
+            border:0;
+            margin-top:10px;
+            font-size:15px;
+        }
+        input {
+            background:rgba(255,255,255,0.1);
+            color:var(--text);
+            border:1px solid rgba(255,255,255,0.06);
+        }
+        button {
+            margin-top:18px;
+            background:linear-gradient(135deg, var(--accent), var(--accent-strong));
+            color:#04111f;
+            font-weight:700;
+            cursor:pointer;
+            box-shadow:0 14px 30px rgba(86,184,255,.25);
+            transition:transform .2s ease, box-shadow .2s ease;
+        }
+        button:hover { transform:translateY(-1px); box-shadow:0 18px 34px rgba(86,184,255,.32); }
+        a { color:var(--accent); }
+        .login-note {
+            margin-top:20px;
+            padding:14px 16px;
+            border-radius:18px;
+            background:rgba(255,255,255,.06);
+            color:var(--muted);
+            font-size:14px;
+            line-height:1.5;
+        }
+        .helper-row {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:12px;
+            margin-top:14px;
+            flex-wrap:wrap;
+        }
+        .text-button {
+            padding:0;
+            margin:0;
+            width:auto;
+            border:0;
+            background:none;
+            color:var(--accent);
+            box-shadow:none;
+            font:inherit;
+            cursor:pointer;
+        }
+        .text-button:hover { transform:none; box-shadow:none; color:#a4eeff; }
+        .helper-panel {
+            display:none;
+            margin-top:16px;
+            padding:16px;
+            border-radius:18px;
+            background:rgba(255,255,255,.06);
+            border:1px solid rgba(255,255,255,.08);
+        }
+        .helper-panel.active { display:block; }
+    @keyframes drift {
+            from { transform:translateX(0); }
+            to { transform:translateX(150vw); }
+        }
+        @keyframes breeze {
+            0% { transform:translateX(0) scaleX(.9); opacity:0; }
+            10% { opacity:.8; }
+            75% { opacity:.5; }
+            100% { transform:translateX(145vw) scaleX(1.05); opacity:0; }
+        }
+        @keyframes floaty {
+            0%, 100% { transform:translateY(0); }
+            50% { transform:translateY(-7px); }
+        }
+        @keyframes blink {
+            0%, 44%, 48%, 100% { opacity:1; }
+            46% { opacity:.15; }
+        }
+        @keyframes wave {
+            0%, 100% { transform:rotate(0deg); }
+            25% { transform:rotate(10deg); }
+            55% { transform:rotate(-6deg); }
+        }
+        @keyframes board-glow {
+            0%, 100% { opacity:.35; }
+            50% { opacity:.75; }
+        }
+        @keyframes rain-drop {
+            0% { transform:translateY(0); opacity:0; }
+            20% { opacity:.9; }
+            100% { transform:translateY(18px); opacity:0; }
+        }
+        @keyframes breeze-swoosh {
+            0%, 100% { transform:translateX(0); opacity:.4; }
+            50% { transform:translateX(10px); opacity:.95; }
+        }
+        @keyframes umbrella-sway {
+            0%, 100% { transform:rotate(0deg); }
+            50% { transform:rotate(-3deg); }
+        }
+        @keyframes bag-swing {
+            0%, 100% { transform:rotate(2deg); }
+            50% { transform:rotate(-5deg); }
+        }
+        @keyframes pulse {
+            0% { box-shadow:0 0 0 0 rgba(122,227,255,.45); }
+            70% { box-shadow:0 0 0 12px rgba(122,227,255,0); }
+            100% { box-shadow:0 0 0 0 rgba(122,227,255,0); }
+        }
+        @media (max-width:900px) {
+            .auth-shell { grid-template-columns:1fr; }
+            .hero, .card { padding:28px; }
+            .hero h1 { max-width:unset; }
+        }
+        @media (max-width:560px) {
+            body { padding:14px; }
+            .auth-shell { border-radius:24px; }
+            .hero, .card { padding:22px; }
+            .weather-strip { grid-template-columns:1fr; }
+            .card h2 { font-size:28px; }
+            input, button { font-size:16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-shell">
+        <section class="hero">
+            <p class="eyebrow">Live Weather Intelligence</p>
+            <h1>Welcome back to calmer monitoring.</h1>
+            <p>Track risk, inspect live conditions, and stay one step ahead with a dashboard that feels more like a weather room than a form.</p>
+            <div class="weather-strip">
+                <div class="weather-chip"><strong>24/7</strong><span>Live alert awareness</span></div>
+                <div class="weather-chip"><strong>Breeze</strong><span>Light motion, low distraction</span></div>
+                <div class="weather-chip"><strong>Mobile</strong><span>Ready for phone checks</span></div>
+            </div>
+            <div class="mascot-scene" aria-hidden="true">
+                <svg class="weather-mascot" viewBox="0 0 260 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g transform="translate(38 18)">
+                        <g>
+                            <path d="M92 0L104 22L128 10L124 36L150 38L132 56L150 76L124 78L128 104L104 92L92 114L80 92L56 104L60 78L34 76L52 56L34 38L60 36L56 10L80 22L92 0Z" fill="#ffcb2f"/>
+                            <circle cx="92" cy="56" r="46" fill="url(#sunFace)"/>
+                            <ellipse cx="75" cy="61" rx="9" ry="12" fill="#ffffff"/>
+                            <ellipse cx="110" cy="61" rx="9" ry="12" fill="#ffffff"/>
+                            <circle cx="78" cy="63" r="5" fill="#3456a5"/>
+                            <circle cx="113" cy="63" r="5" fill="#3456a5"/>
+                            <circle cx="80" cy="61" r="2" fill="#111827"/>
+                            <circle cx="115" cy="61" r="2" fill="#111827"/>
+                            <path d="M69 49C73 44 79 43 84 47" stroke="#9d6a00" stroke-width="3" stroke-linecap="round"/>
+                            <path d="M103 47C108 43 114 44 118 49" stroke="#9d6a00" stroke-width="3" stroke-linecap="round"/>
+                            <path d="M81 86C91 79 102 79 111 86" stroke="#9d6a00" stroke-width="4" stroke-linecap="round"/>
+                            <circle cx="61" cy="76" r="5" fill="#ffac66" opacity=".9"/>
+                            <circle cx="123" cy="76" r="5" fill="#ffac66" opacity=".9"/>
+                        </g>
+                        <g transform="translate(10 78)">
+                            <path d="M22 56C26 38 42 26 60 26C73 26 85 31 93 40C97 39 101 38 106 38C123 38 137 52 137 69C137 88 121 102 102 102H27C6 102 -10 86 -10 65C-10 45 6 29 26 29C31 29 36 30 41 32C46 17 60 8 76 8C96 8 112 22 116 42" fill="url(#cloudShade)"/>
+                            <path d="M29 48C33 33 45 24 60 24C70 24 79 27 87 34C92 33 96 32 101 32C116 32 128 44 128 58C128 74 115 87 99 87H31C14 87 0 74 0 57C0 41 13 28 29 28C33 28 37 29 40 30" fill="url(#cloudTop)"/>
+                            <path d="M38 86C46 78 53 76 62 80" stroke="#ffd166" stroke-width="6" stroke-linecap="round"/>
+                            <path d="M70 84C78 76 88 75 98 81" stroke="#ffd166" stroke-width="6" stroke-linecap="round"/>
+                            <circle cx="8" cy="112" r="8" fill="url(#dropBlue)"/>
+                            <circle cx="42" cy="126" r="8" fill="url(#dropBlue)"/>
+                            <circle cx="78" cy="116" r="8" fill="url(#dropBlue)"/>
+                            <circle cx="112" cy="128" r="8" fill="url(#dropBlue)"/>
+                            <path d="M8 100C13 105 15 111 8 120C1 111 3 105 8 100Z" fill="url(#dropBlue)"/>
+                            <path d="M42 114C47 119 49 125 42 134C35 125 37 119 42 114Z" fill="url(#dropBlue)"/>
+                            <path d="M78 104C83 109 85 115 78 124C71 115 73 109 78 104Z" fill="url(#dropBlue)"/>
+                            <path d="M112 116C117 121 119 127 112 136C105 127 107 121 112 116Z" fill="url(#dropBlue)"/>
+                        </g>
+                    </g>
+                    <defs>
+                        <radialGradient id="sunFace" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(92 44) rotate(90) scale(58)">
+                            <stop stop-color="#fff7bf"/>
+                            <stop offset="1" stop-color="#ffcf3d"/>
+                        </radialGradient>
+                        <linearGradient id="cloudTop" x1="64" y1="24" x2="64" y2="87" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#d7d2e6"/>
+                            <stop offset="1" stop-color="#8a7a98"/>
+                        </linearGradient>
+                        <linearGradient id="cloudShade" x1="64" y1="8" x2="64" y2="102" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#8f7fa0"/>
+                            <stop offset="1" stop-color="#51425d"/>
+                        </linearGradient>
+                        <linearGradient id="dropBlue" x1="0" y1="100" x2="0" y2="136" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#bde7ff"/>
+                            <stop offset="1" stop-color="#4b9fff"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <div class="mascot-status"><span class="status-dot"></span>Forecast view is ready for a quick sign-in</div>
+            </div>
+        </section>
+        <section class="card">
+            <h2>Login</h2>
+            <p>Access the dashboard securely and continue monitoring your live weather risk.</p>
+            <p class="message" id="message">{% if message %}{{ message }}{% endif %}</p>
+            <label class="field-label" for="email">Email</label>
+            <input id="email" type="email" placeholder="you@example.com">
+            <label class="field-label" for="password">Password</label>
+            <input id="password" type="password" placeholder="Enter your password">
+            <button id="loginButton" type="button">Enter Dashboard</button>
+            <div class="helper-row">
+                <span class="muted">Need help accessing your account?</span>
+                <button id="toggleForgotPassword" class="text-button" type="button">Forgot password?</button>
+            </div>
+            <div id="forgotPasswordPanel" class="helper-panel">
+                <label class="field-label" for="resetEmail">Reset Email</label>
+                <input id="resetEmail" type="email" placeholder="you@example.com">
+                <button id="forgotPasswordButton" type="button">Send Reset Link</button>
+            </div>
+            <div class="login-note">Weather changes fast. This workspace keeps your latest alerts, forecasts, and risk insights in one place.</div>
+            <p>Need an account? <a href="/signup">Sign up</a></p>
+        </section>
+    </div>
+    <script>
+        const messageEl = document.getElementById("message");
+        const forgotPasswordPanel = document.getElementById("forgotPasswordPanel");
+        document.getElementById("toggleForgotPassword").addEventListener("click", () => {
+            forgotPasswordPanel.classList.toggle("active");
+        });
+        document.getElementById("loginButton").addEventListener("click", async () => {
+            const res = await fetch("/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email: document.getElementById("email").value.trim(),
+                    password: document.getElementById("password").value
+                })
+            });
+            const data = await res.json();
+            if (!res.ok || !data.success) {
+                messageEl.innerText = data.error || "Login failed.";
+                return;
+            }
+            window.location.href = "/dashboard";
+        });
+        document.getElementById("forgotPasswordButton").addEventListener("click", async () => {
+            const res = await fetch("/forgot-password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email: document.getElementById("resetEmail").value.trim()
+                })
+            });
+            const data = await res.json();
+            if (!res.ok || !data.success) {
+                messageEl.innerText = data.error || "Unable to send reset link.";
+                return;
+            }
+            messageEl.innerText = data.reset_url
+                ? `Reset link generated: ${data.reset_url}`
+                : (data.message || "If that email is registered, a password reset link has been sent.");
+        });
+    </script>
+</body>
+</html>

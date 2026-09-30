@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Disaster Management{% endblock %}</title>
+    <style>
+        :root {
+            --bg-top:#071726;
+            --bg-bottom:#2d6d93;
+            --panel:rgba(10,20,35,.72);
+            --soft:rgba(255,255,255,.08);
+            --border:rgba(255,255,255,.12);
+            --text:#f4fbff;
+            --muted:#b4cedc;
+            --accent:#6fd3ff;
+            --shadow:0 20px 40px rgba(0,0,0,.22);
+        }
+        * { box-sizing:border-box; }
+        body {
+            margin:0;
+            min-height:100vh;
+            font-family:"Segoe UI",sans-serif;
+            color:var(--text);
+            background:radial-gradient(circle at top, rgba(111,211,255,.16), transparent 28%), linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+            overflow-x:hidden;
+        }
+        body::before, body::after {
+            content:"";
+            position:fixed;
+            left:-20%;
+            width:380px;
+            height:90px;
+            border-radius:999px;
+            pointer-events:none;
+            z-index:0;
+            filter:blur(10px);
+        }
+        body::before { top:18%; background:linear-gradient(90deg, transparent, rgba(255,255,255,.14), transparent); animation:menu-drift 18s linear infinite; }
+        body::after { top:58%; background:linear-gradient(90deg, transparent, rgba(111,211,255,.12), transparent); animation:menu-drift 24s linear infinite reverse; }
+        .page-shell {
+            position:relative;
+            z-index:1;
+            max-width:1200px;
+            margin:0 auto;
+            padding:20px;
+            animation:page-slide .38s ease both;
+        }
+        .page-topbar, .page-panel {
+            background:var(--panel);
+            border:1px solid var(--border);
+            border-radius:24px;
+            box-shadow:var(--shadow);
+            backdrop-filter:blur(16px);
+        }
+        .page-topbar {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:12px;
+            padding:16px 20px;
+            margin-bottom:18px;
+            flex-wrap:nowrap;
+            position:relative;
+            z-index:1000;
+            overflow:visible;
+        }
+        .page-left { min-width:0; flex:1 1 auto; }
+        .page-brand h1, .page-brand p { margin:0; }
+        .page-brand h1 { font-size:clamp(28px, 3vw, 40px); white-space:nowrap; }
+        .page-brand p { margin-top:6px; color:var(--muted); font-size:14px; }
+        .page-links {
+            display:flex;
+            align-items:center;
+            gap:8px;
+            flex-wrap:nowrap;
+            justify-content:flex-end;
+        }
+        .page-links > * { flex:0 0 auto; white-space:nowrap; }
+        .page-nav-link {
+            position:relative;
+            color:var(--text);
+            text-decoration:none;
+            font-weight:600;
+            padding:10px 12px;
+            border-radius:12px;
+            transition:background .18s ease, color .18s ease;
+        }
+        .page-nav-link::after {
+            content:"";
+            position:absolute;
+            left:12px;
+            right:12px;
+            bottom:5px;
+            height:2px;
+            border-radius:999px;
+            background:linear-gradient(90deg,#72ddf7,#3a86ff);
+            transform:scaleX(0);
+            transform-origin:left;
+            transition:transform .22s ease;
+        }
+        .page-nav-link:hover {
+            background:rgba(255,255,255,.08);
+            color:#9de7ff;
+        }
+        .page-nav-link:hover::after { transform:scaleX(1); }
+        .nav-dropdown {
+            position:relative;
+        }
+        .nav-dropdown-toggle {
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+        }
+        .nav-dropdown-toggle::before {
+            content:"";
+            width:8px;
+            height:8px;
+            border-right:2px solid currentColor;
+            border-bottom:2px solid currentColor;
+            transform:rotate(45deg) translateY(-1px);
+            transition:transform .2s ease;
+        }
+        .nav-dropdown:hover .nav-dropdown-toggle::before,
+        .nav-dropdown:focus-within .nav-dropdown-toggle::before {
+            transform:rotate(-135deg) translateY(-1px);
+        }
+        .nav-submenu {
+            position:absolute;
+            top:100%;
+            left:0;
+            margin-top:10px;
+            min-width:220px;
+            padding:10px;
+            border-radius:18px;
+            background:rgba(7,16,27,.96);
+            border:1px solid rgba(255,255,255,.08);
+            box-shadow:0 22px 48px rgba(0,0,0,.28);
+            display:grid;
+            gap:4px;
+            opacity:0;
+            pointer-events:none;
+            transform:translateY(8px);
+            transition:opacity .22s ease, transform .22s ease;
+            z-index:9999;
+        }
+        .nav-dropdown:hover .nav-submenu,
+        .nav-dropdown:focus-within .nav-submenu {
+            opacity:1;
+            pointer-events:auto;
+            transform:translateY(0);
+        }
+        .nav-dropdown.open .nav-submenu {
+            opacity:1;
+            pointer-events:auto;
+            transform:translateY(0);
+        }
+        .nav-dropdown.open .nav-dropdown-toggle::before {
+            transform:rotate(-135deg) translateY(-1px);
+        }
+        .nav-submenu a {
+            display:block;
+            padding:12px 14px;
+            border-radius:12px;
+            text-decoration:none;
+            color:var(--text);
+            transition:background .18s ease, color .18s ease, transform .18s ease;
+        }
+        .nav-submenu a:hover {
+            background:rgba(111,211,255,.08);
+            color:#9de7ff;
+            transform:translateX(4px);
+        }
+        .page-link {
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            min-height:44px;
+            padding:12px 16px;
+            border-radius:14px;
+            text-decoration:none;
+            font-weight:700;
+            color:#04111f;
+            background:linear-gradient(135deg,#72ddf7,#3a86ff);
+        }
+        .page-grid {
+            display:grid;
+            gap:18px;
+            grid-template-columns:repeat(2, minmax(0, 1fr));
+        }
+        .page-panel {
+            padding:24px;
+            position:relative;
+            overflow:hidden;
+        }
+        .page-panel::before {
+            content:"";
+            position:absolute;
+            inset:auto -32px -38px auto;
+            width:150px;
+            height:150px;
+            border-radius:50%;
+            background:radial-gradient(circle, rgba(111,211,255,.14), transparent 72%);
+            pointer-events:none;
+        }
+        .eyebrow {
+            margin:0 0 10px;
+            color:var(--accent);
+            text-transform:uppercase;
+            letter-spacing:.18em;
+            font-size:12px;
+        }
+        .page-panel h2 {
+            margin:0;
+            font-size:34px;
+        }
+        .page-copy {
+            margin:14px 0 0;
+            color:var(--muted);
+            line-height:1.75;
+        }
+        .info-list {
+            display:grid;
+            gap:12px;
+            margin-top:18px;
+        }
+        .info-item {
+            padding:16px;
+            border-radius:18px;
+            background:var(--soft);
+            border:1px solid rgba(255,255,255,.08);
+        }
+        .info-item strong {
+            display:block;
+            margin-bottom:6px;
+        }
+        .info-item a {
+            color:#8fe4ff;
+            text-decoration:none;
+        }
+        .info-item a:hover { text-decoration:underline; }
+        @keyframes menu-drift { from { transform:translateX(0); } to { transform:translateX(150vw); } }
+        @keyframes page-slide { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+        @media (max-width:900px) {
+            .page-grid { grid-template-columns:1fr; }
+            .page-topbar { align-items:flex-start; flex-direction:column; }
+            .page-links { width:100%; }
+        }
+        @media (max-width:640px) {
+            .page-shell { padding:14px; }
+            .page-topbar, .page-panel { border-radius:20px; padding:18px; }
+            .page-links { justify-content:space-between; width:100%; }
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="page-topbar">
+            <div class="page-left">
+                <div class="page-brand">
+                    <h1>AI Disaster Management</h1>
+                    <p>{{ nav_user.name if nav_user else "Navigation and support hub" }}</p>
+                </div>
+            </div>
+            <div class="page-links">
+                <div class="nav-dropdown">
+                    <a class="page-nav-link nav-dropdown-toggle" href="/about" aria-expanded="false">About Us</a>
+                    <div class="nav-submenu">
+                        <a href="/about">Overview</a>
+                        <a href="/emergency">Emergency Contacts</a>
+                        <a href="/support">Customer Care</a>
+                        <a href="/contacts">Contact Numbers</a>
+                    </div>
+                </div>
+                {% if nav_is_authenticated %}
+                <a class="page-link" href="/dashboard">Dashboard</a>
+                {% endif %}
+            </div>
+        </nav>
+        {% block content %}{% endblock %}
+    </div>
+    <script>
+        document.querySelectorAll(".nav-dropdown").forEach(dropdown => {
+            const toggle = dropdown.querySelector(".nav-dropdown-toggle");
+            if (!toggle) return;
+            toggle.addEventListener("click", event => {
+                event.preventDefault();
+                const isOpen = dropdown.classList.toggle("open");
+                toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+                document.querySelectorAll(".nav-dropdown").forEach(otherDropdown => {
+                    if (otherDropdown === dropdown) return;
+                    otherDropdown.classList.remove("open");
+                    const otherToggle = otherDropdown.querySelector(".nav-dropdown-toggle");
+                    if (otherToggle) otherToggle.setAttribute("aria-expanded", "false");
+                });
+            });
+        });
+        document.addEventListener("click", event => {
+            document.querySelectorAll(".nav-dropdown.open").forEach(dropdown => {
+                if (dropdown.contains(event.target)) return;
+                dropdown.classList.remove("open");
+                const toggle = dropdown.querySelector(".nav-dropdown-toggle");
+                if (toggle) toggle.setAttribute("aria-expanded", "false");
+            });
+        });
+    </script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

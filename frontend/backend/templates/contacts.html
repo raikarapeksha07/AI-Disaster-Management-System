@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% set page_title = "Contact Numbers" %}
+{% block title %}Contact Numbers{% endblock %}
+{% block content %}
+<section class="page-grid">
+    <div class="page-panel">
+        <p class="eyebrow">Contact Numbers</p>
+        <h2>Your Saved Contact Details</h2>
+        <p class="page-copy">This page shows the contact details currently available for your account. If dedicated emergency contacts are added later, they can appear here too.</p>
+        <div class="info-list">
+            {% for item in saved_contacts %}
+            <div class="info-item">
+                <strong>{{ item.label }}</strong>
+                {% if item.value.startswith('+') %}
+                <a href="tel:{{ item.value }}">{{ item.value }}</a><br>
+                {% else %}
+                <a href="mailto:{{ item.value }}">{{ item.value }}</a><br>
+                {% endif %}
+                {{ item.description }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="page-panel">
+        <p class="eyebrow">Account Context</p>
+        <h2>Current User</h2>
+        <div class="info-list">
+            <div class="info-item"><strong>Name</strong>{{ user.name }}</div>
+            <div class="info-item"><strong>State</strong>{{ user.state }}</div>
+            <div class="info-item"><strong>Status</strong>{% if user.is_admin %}Admin account{% else %}Standard user account{% endif %}</div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP</title>
+    <style>
+        :root { --bg-top:#081521; --bg-bottom:#1f5578; --panel:rgba(8,18,31,.78); --border:rgba(255,255,255,.14); --text:#f4fbff; --muted:#b3cfde; --accent:#7ae3ff; --accent-strong:#56b8ff; --shadow:0 28px 60px rgba(0,0,0,.28); }
+        * { box-sizing:border-box; }
+        body { position:relative; margin:0; min-height:100vh; display:grid; place-items:center; padding:24px; overflow:hidden; font-family:"Segoe UI",sans-serif; color:var(--text); background:linear-gradient(180deg, var(--bg-top), var(--bg-bottom)); }
+        body::before,
+        body::after { content:""; position:fixed; left:-22%; width:320px; height:78px; border-radius:999px; pointer-events:none; filter:blur(10px); background:linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent); animation:breeze 18s linear infinite; }
+        body::before { top:20%; }
+        body::after { top:68%; animation-duration:24s; animation-direction:reverse; opacity:.75; }
+        .card { position:relative; z-index:1; width:min(460px, 100%); padding:32px; border-radius:28px; border:1px solid var(--border); background:var(--panel); box-shadow:var(--shadow); backdrop-filter:blur(18px); }
+        h1 { margin:0 0 10px; font-size:32px; }
+        p { color:var(--muted); line-height:1.6; }
+        input, button { width:100%; padding:14px 16px; border-radius:16px; border:0; margin-top:14px; font-size:15px; }
+        input { background:rgba(255,255,255,.1); color:var(--text); border:1px solid rgba(255,255,255,.06); }
+        button { background:linear-gradient(135deg, var(--accent), var(--accent-strong)); color:#04111f; font-weight:700; cursor:pointer; transition:transform .18s ease, box-shadow .18s ease; box-shadow:0 14px 26px rgba(86,184,255,.18); }
+        button:hover { transform:translateY(-1px); box-shadow:0 18px 30px rgba(86,184,255,.24); }
+        .message { min-height:22px; margin-top:14px; color:#ffd0d0; }
+        a { color:var(--accent); }
+        .otp-group { display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:10px; margin-top:14px; }
+        .otp-box { margin-top:0; padding:14px 0; text-align:center; font-size:24px; font-weight:700; letter-spacing:.04em; transition:border-color .18s ease, box-shadow .18s ease, background .18s ease, transform .18s ease; }
+        .otp-box:focus { outline:none; border-color:rgba(122,227,255,.65); background:rgba(255,255,255,.14); box-shadow:0 0 0 3px rgba(122,227,255,.12), 0 0 18px rgba(122,227,255,.16); transform:translateY(-1px); }
+        .otp-hidden { position:absolute; opacity:0; pointer-events:none; margin:0; padding:0; width:1px; height:1px; }
+        .timer { margin-top:12px; font-size:14px; color:var(--muted); }
+        @keyframes breeze {
+            0% { transform:translateX(0); opacity:0; }
+            12% { opacity:.8; }
+            78% { opacity:.35; }
+            100% { transform:translateX(155vw); opacity:0; }
+        }
+        @media (max-width:520px) {
+            .card { padding:24px; }
+            .otp-group { gap:8px; }
+            .otp-box { font-size:20px; padding:12px 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Verify OTP</h1>
+        <p>Enter the 6-digit OTP sent to <strong>{{ email or "your email" }}</strong>.</p>
+        <form method="post" action="/verify-otp" id="otpForm">
+            <div class="otp-group" aria-label="OTP input">
+                <input class="otp-box" type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" required>
+                <input class="otp-box" type="text" inputmode="numeric" maxlength="1" required>
+                <input class="otp-box" type="text" inputmode="numeric" maxlength="1" required>
+                <input class="otp-box" type="text" inputmode="numeric" maxlength="1" required>
+                <input class="otp-box" type="text" inputmode="numeric" maxlength="1" required>
+                <input class="otp-box" type="text" inputmode="numeric" maxlength="1" required>
+            </div>
+            <input class="otp-hidden" id="otpValue" name="otp" type="text" required>
+            <div class="timer" id="resendTimer">Resend OTP in 30s</div>
+            <button type="submit">Verify OTP</button>
+        </form>
+        <div class="message">{{ message }}</div>
+        <p><a href="/login">Back to login</a></p>
+    </div>
+    <script>
+        const otpForm = document.getElementById("otpForm");
+        const otpBoxes = Array.from(document.querySelectorAll(".otp-box"));
+        const otpValue = document.getElementById("otpValue");
+        const resendTimer = document.getElementById("resendTimer");
+        let remainingSeconds = 30;
+
+        function syncOtpValue() {
+            otpValue.value = otpBoxes.map(box => box.value).join("");
+        }
+
+        otpBoxes.forEach((box, index) => {
+            box.addEventListener("input", event => {
+                const numericValue = event.target.value.replace(/\D/g, "").slice(0, 1);
+                event.target.value = numericValue;
+                syncOtpValue();
+                if (numericValue && index < otpBoxes.length - 1) {
+                    otpBoxes[index + 1].focus();
+                    otpBoxes[index + 1].select();
+                }
+            });
+
+            box.addEventListener("keydown", event => {
+                if (event.key === "Backspace" && !box.value && index > 0) {
+                    otpBoxes[index - 1].focus();
+                    otpBoxes[index - 1].select();
+                }
+                if (event.key === "ArrowLeft" && index > 0) {
+                    otpBoxes[index - 1].focus();
+                }
+                if (event.key === "ArrowRight" && index < otpBoxes.length - 1) {
+                    otpBoxes[index + 1].focus();
+                }
+            });
+
+            box.addEventListener("paste", event => {
+                event.preventDefault();
+                const pastedDigits = (event.clipboardData.getData("text") || "").replace(/\D/g, "").slice(0, 6);
+                if (!pastedDigits) return;
+                otpBoxes.forEach((input, inputIndex) => {
+                    input.value = pastedDigits[inputIndex] || "";
+                });
+                syncOtpValue();
+                const nextIndex = Math.min(pastedDigits.length, otpBoxes.length - 1);
+                otpBoxes[nextIndex].focus();
+            });
+        });
+
+        otpForm.addEventListener("submit", event => {
+            syncOtpValue();
+            if (otpValue.value.length !== 6) {
+                event.preventDefault();
+                otpBoxes.find(box => !box.value)?.focus();
+            }
+        });
+
+        const timerInterval = setInterval(() => {
+            remainingSeconds -= 1;
+            if (remainingSeconds <= 0) {
+                resendTimer.textContent = "You can request a new OTP now.";
+                clearInterval(timerInterval);
+                return;
+            }
+            resendTimer.textContent = `Resend OTP in ${remainingSeconds}s`;
+        }, 1000);
+
+        if (otpBoxes.length > 0) {
+            otpBoxes[0].focus();
+        }
+    </script>
+</body>
+</html>

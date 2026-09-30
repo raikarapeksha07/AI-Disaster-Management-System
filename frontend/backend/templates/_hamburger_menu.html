@@ -1,0 +1,31 @@
+<div class="menu-shell" data-menu-shell>
+    <button class="menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="navDrawer" data-menu-toggle>
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <div class="menu-backdrop" data-menu-backdrop hidden></div>
+    <aside class="menu-drawer" id="navDrawer" data-menu-drawer aria-hidden="true">
+        <div class="menu-drawer-head">
+            <div>
+                <p class="menu-eyebrow">Quick Menu</p>
+                <h3>{{ nav_title|default("AI Disaster Management") }}</h3>
+            </div>
+            <button class="menu-close" type="button" aria-label="Close navigation menu" data-menu-close>&times;</button>
+        </div>
+        <nav class="menu-links">
+            {% if nav_is_authenticated %}
+            <a href="/dashboard">Dashboard</a>
+            {% else %}
+            <a href="/login">Login</a>
+            {% endif %}
+            <a href="/about">About Us</a>
+            <a href="/emergency">Emergency Contacts</a>
+            <a href="/support">Customer Care</a>
+            <a href="/contacts">Contact Numbers</a>
+            {% if nav_is_authenticated %}
+            <a href="/logout">Logout</a>
+            {% endif %}
+        </nav>
+    </aside>
+</div>

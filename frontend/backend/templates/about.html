@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% set page_title = "About Us" %}
+{% block title %}About Us{% endblock %}
+{% block extra_head %}
+<style>
+    .about-hero {
+        display:grid;
+        grid-template-columns:1.15fr .85fr;
+        gap:18px;
+        margin-bottom:18px;
+    }
+    .hero-visual, .about-card {
+        position:relative;
+        overflow:hidden;
+        border-radius:24px;
+        border:1px solid rgba(255,255,255,.1);
+        box-shadow:var(--shadow);
+    }
+    .hero-visual {
+        min-height:360px;
+        background:
+            linear-gradient(90deg, rgba(7,22,38,.82), rgba(7,22,38,.25)),
+            url("https://images.unsplash.com/photo-1520614073999-25a4e060f7ea?auto=format&fit=crop&w=1200&q=80") center/cover no-repeat;
+        display:flex;
+        align-items:flex-end;
+        padding:30px;
+    }
+    .hero-visual h2 { margin:0; font-size:clamp(34px, 5vw, 56px); }
+    .hero-visual p { margin:14px 0 0; max-width:34ch; color:#d8edf7; line-height:1.7; }
+    .about-card {
+        background:var(--panel);
+        padding:24px;
+        backdrop-filter:blur(16px);
+    }
+    .about-card h3 { margin:0; font-size:28px; }
+    .about-image-grid {
+        display:grid;
+        grid-template-columns:repeat(3, minmax(0, 1fr));
+        gap:18px;
+        margin-top:18px;
+    }
+    .about-image {
+        min-height:220px;
+        border-radius:22px;
+        overflow:hidden;
+        border:1px solid rgba(255,255,255,.1);
+        box-shadow:var(--shadow);
+        position:relative;
+        background-size:cover;
+        background-position:center;
+    }
+    .about-image::after {
+        content:"";
+        position:absolute;
+        inset:0;
+        background:linear-gradient(180deg, transparent 35%, rgba(7,22,38,.84));
+    }
+    .about-image-copy {
+        position:absolute;
+        left:16px;
+        right:16px;
+        bottom:16px;
+        z-index:1;
+    }
+    .about-image-copy strong { display:block; margin-bottom:6px; font-size:18px; }
+    .about-image-copy span { color:#d4e9f5; line-height:1.5; }
+    @media (max-width:900px) {
+        .about-hero, .about-image-grid { grid-template-columns:1fr; }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<section class="about-hero">
+    <div class="hero-visual">
+        <div>
+            <p class="eyebrow">About Us</p>
+            <h2>Smarter Disaster Awareness For Real Conditions</h2>
+            <p>We help people monitor changing weather, receive alerts early, and access emergency guidance from one clean system.</p>
+        </div>
+    </div>
+    <div class="about-card">
+        <p class="eyebrow">What We Do</p>
+        <h3>One Platform For Alerts, Weather, And Response</h3>
+        <p class="page-copy">AI Disaster Management System helps people monitor live weather conditions, flood risk, air quality, and alert status from one place. We combine forecasts, mapped risk checks, alert acknowledgement, and help resources so users and admins can respond faster.</p>
+        <div class="info-list">
+            <div class="info-item"><strong>Live monitoring</strong>Weather, rainfall, AQI, and flood risk are brought together in one dashboard.</div>
+            <div class="info-item"><strong>Alert delivery</strong>The system sends warnings, tracks pending alerts, and supports quick acknowledgement.</div>
+            <div class="info-item"><strong>Location-based support</strong>Map tools and regional checks help users inspect nearby conditions before risk grows.</div>
+        </div>
+    </div>
+</section>
+
+<section class="page-grid">
+    <div class="page-panel">
+        <p class="eyebrow">Help & Contact</p>
+        <h2>Helpline And Customer Care</h2>
+        <div class="info-list">
+            <div class="info-item"><strong>Emergency Helpline</strong><a href="tel:+911123456789">+91 11 2345 6789</a></div>
+            <div class="info-item"><strong>Customer Care</strong><a href="tel:+919876543210">+91 98765 43210</a></div>
+            <div class="info-item"><strong>Support Email</strong><a href="mailto:support@aidisastermanagement.in">support@aidisastermanagement.in</a></div>
+            <div class="info-item"><strong>Response Hours</strong>24/7 emergency monitoring support, with customer care assistance available throughout the day.</div>
+        </div>
+    </div>
+    <div class="page-panel">
+        <p class="eyebrow">Mission</p>
+        <h2>Why This System Exists</h2>
+        <p class="page-copy">Disaster communication is most useful when it is clear, timely, and easy to act on. This platform is designed to reduce confusion by keeping weather checks, alert status, and contact information in one accessible workflow.</p>
+        <div class="info-list">
+            <div class="info-item"><strong>Fast access</strong>Important risk details are available without digging through multiple tools.</div>
+            <div class="info-item"><strong>Practical design</strong>The system is meant for real use during pressure, not just for reporting data.</div>
+            <div class="info-item"><strong>Quick support path</strong>Emergency numbers and customer care details stay easy to find when needed.</div>
+        </div>
+    </div>
+</section>
+
+<section class="about-image-grid">
+    <div class="about-image" style='background-image:url("https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=900&q=80");'>
+        <div class="about-image-copy">
+            <strong>Monitoring Team</strong>
+            <span>Continuous observation and coordination support for changing weather conditions.</span>
+        </div>
+    </div>
+    <div class="about-image" style='background-image:url("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80");'>
+        <div class="about-image-copy">
+            <strong>Emergency Response</strong>
+            <span>Fast information flow helps people react earlier during risky situations.</span>
+        </div>
+    </div>
+    <div class="about-image" style='background-image:url("https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=900&q=80");'>
+        <div class="about-image-copy">
+            <strong>Support And Care</strong>
+            <span>Customer care, emergency contacts, and alert tools are kept close together.</span>
+        </div>
+    </div>
+</section>
+{% endblock %}
